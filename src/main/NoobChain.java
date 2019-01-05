@@ -15,8 +15,8 @@ public class NoobChain {
 	
 	public static int difficulty = 3;
 	public static float minimumTransaction = 0.1f;
-	public static Wallet walletA;
-	public static Wallet walletB;
+	public static Personne walletA;
+	public static Personne walletB;
 	public static Transaction genesisTransaction;
 
 	public static void main(String[] args) {	
@@ -24,9 +24,9 @@ public class NoobChain {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 		
 		//Create wallets:
-		walletA = new Wallet();
-		walletB = new Wallet();		
-		Wallet coinbase = new Wallet();
+		walletA = new Personne();
+		walletB = new Personne();		
+		Personne coinbase = new Personne();
 		
 		//create genesis transaction, which sends 100 NoobCoin to walletA: 
 		genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f, null);

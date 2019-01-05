@@ -3,16 +3,17 @@ package main;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Wallet {
+public class Personne {
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
 	public HashMap<String,TransactionOutput> UTXOs = 
 			new HashMap<String,TransactionOutput>(); //only UTXOs owned by this wallet.
 	
-	public Wallet(){
+	public Personne(){
 		generateKeyPair();	
 	}
 	
@@ -76,5 +77,68 @@ public class Wallet {
 				UTXOs.remove(input.getTransactionOutputId());
 			}
 			return newTransaction;
-	}
+		}
+		
+		public boolean createEvent(PublicKey _recipient, String name, 
+				String description,
+				Date begin,
+				Date end,
+				Date end_subscription,
+				String location,
+				int min_participants,
+				int max_participants){
+			
+			
+			if(name==null){
+				System.out.println("Name of the event null");
+				return false;
+			}
+			
+			if(description==null){
+				System.out.println("Description of the event null");
+				return false;
+			}
+			
+			if(begin==null){
+				System.out.println("Date of the beginning of the event is null");
+				return false;
+			}
+			
+			if(end==null){
+				System.out.println("Date of the end of the event is null");
+				return false;
+			}
+			
+			if(end_subscription==null){
+				System.out.println("Date of the end of the subscription is null");
+				return false;
+			}
+			
+			if(min_participants<0){
+				System.out.println("Minimum number of participants must be positive");
+				return false;
+			}
+			
+			if(max_participants<0){
+				System.out.println("Maximum number of participants must be positive");
+				return false;
+			}
+			
+			if(min_participants>max_participants){
+				System.out.println("Minimum number of participants must be smaller than the maximum number of participants");
+				return false;
+			}
+			
+			if(end_subscription.before(new Date())){
+				System.out.println("Date of subcription is alrealdy passed");
+				return false;
+			}
+			
+			if(end.before(new Date())){
+				System.out.println("Date of the end of the event is alrealdy passed");
+				return false;
+			}
+			
+			return true;
+		}
 }
