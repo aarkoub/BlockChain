@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.google.gson.GsonBuilder;
 
-import main.Transaction;
+import main.TransactionCreation;
 
 public class StringUtil {
 	//Applies Sha256 to a string and returns the result. 
@@ -76,11 +76,11 @@ public class StringUtil {
 			return Base64.getEncoder().encodeToString(key.getEncoded());
 		}
 		
-		public static String getMerkleRoot(ArrayList<Transaction> transactions) {
+		public static String getMerkleRoot(ArrayList<TransactionCreation> transactions) {
 			int count = transactions.size();
 			
 			List<String> previousTreeLayer = new ArrayList<String>();
-			for(Transaction transaction : transactions) {
+			for(TransactionCreation transaction : transactions) {
 				previousTreeLayer.add(transaction.transactionId);
 			}
 			List<String> treeLayer = previousTreeLayer;

@@ -1,11 +1,11 @@
 package main;
 
-public class TransactionInput {
+public class TransactionCreationInput {
 	
 	private String transactionOutputId; //Reference to TransactionOutputs -> transactionId
-	private TransactionOutput UTXO; //Contains the Unspent transaction output
+	private TransactionCreationOutput UTXO; //Contains the Unspent transaction output
 	
-	public TransactionInput(String transactionOutputId) {
+	public TransactionCreationInput(String transactionOutputId) {
 		this.transactionOutputId = transactionOutputId;
 	}
 	
@@ -13,11 +13,11 @@ public class TransactionInput {
 		return transactionOutputId;
 	}
 	
-	public TransactionOutput getUTXO(){
+	public TransactionCreationOutput getUTXO(){
 		return UTXO;
 	}
 	
-	public void setUTXO(TransactionOutput utxo){
+	public void setUTXO(TransactionCreationOutput utxo){
 		this.UTXO = utxo;
 	}
 	

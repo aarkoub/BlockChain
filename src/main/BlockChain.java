@@ -3,36 +3,51 @@ package main;
 
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Date;
 //import java.util.Base64;
 import java.util.HashMap;
 //import com.google.gson.GsonBuilder;
 import java.util.Map;
 
-public class NoobChain {
+public class BlockChain {
 	
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
-	public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
+	public static HashMap<String,TransactionCreationOutput> UTXOs = new HashMap<String,TransactionCreationOutput>();
 	
 	public static int difficulty = 3;
-	public static float minimumTransaction = 0.1f;
-	public static Personne walletA;
-	public static Personne walletB;
-	public static Transaction genesisTransaction;
+	public static Personne amel, lingchun;
+	
+	public static TransactionCreation genesisTransaction;
 
 	public static void main(String[] args) {	
 		//add our blocks to the blockchain ArrayList:
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 		
 		//Create wallets:
-		walletA = new Personne();
-		walletB = new Personne();		
-		Personne coinbase = new Personne();
+		amel = new Personne();
+		lingchun = new Personne();
+		
+		Personne first_person = new Personne();
+		String name = "opera";
+		String description = "opera_garnier";
+		String location = "paris";
+		long begin = Date.UTC(2019-1900, 0, 7, 6, 0, 0);
+		long end = Date.UTC(2019-1900, 0, 8, 8, 8, 9);
+		long end_subscription = Date.UTC(2019-1900, 0, 6, 22, 50, 8);
+		int min_capacity = 5;
+		int max_capacity = 8;
 		
 		//create genesis transaction, which sends 100 NoobCoin to walletA: 
-		genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f, null);
-		genesisTransaction.generateSignature(coinbase.getPrivateKey());	 //manually sign the genesis transaction	
+		genesisTransaction = new TransactionCreation(amel.getPublicKey(), amel.getPublicKey(),
+				name, description, begin, end, end_subscription, location,
+				min_capacity, max_capacity, null);
+		genesisTransaction.generateSignature(amel.getPrivateKey());	 //manually sign the genesis transaction	
 		genesisTransaction.transactionId = "0"; //manually set the transaction id
-		genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
+		genesisTransaction.outputs.add(new TransactionCreationOutput(genesisTransaction.reciepient,genesisTransaction.transactionId,
+				genesisTransaction.getName(), genesisTransaction.getDescription(), genesisTransaction.getBegin().getTime(),
+				genesisTransaction.getEnd().getTime(), genesisTransaction.getEnd_subcription().getTime(), genesisTransaction.getLocation(), 
+				genesisTransaction.getMin_capacity(), genesisTransaction.getMax_capacity()
+				)); //manually add the Transactions Output
 		UTXOs.put(genesisTransaction.outputs.get(0).getId(), genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
 		
 		System.out.println("Creating and Mining Genesis block... ");
@@ -40,7 +55,13 @@ public class NoobChain {
 		genesis.addTransaction(genesisTransaction);
 		addBlock(genesis);
 		
-		//testing
+		Block block1 = new Block(genesis.getHash());
+		System.out.println("Transaction added ? "+block1.addTransaction(lingchun.createEvent(lingchun.getPublicKey(),name,
+				description, begin, end, end_subscription, location,
+				min_capacity, max_capacity)));
+		addBlock(block1);
+		
+		/*//testing
 		Block block1 = new Block(genesis.getHash());
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance());
 		System.out.println("\nWalletA is Attempting to send funds (40) to WalletB...");
@@ -60,7 +81,7 @@ public class NoobChain {
 		System.out.println("\nWalletB is Attempting to send funds (20) to WalletA...");
 		block3.addTransaction(walletB.sendFunds( walletA.getPublicKey(), 20));
 		System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-		System.out.println("WalletB's balance is: " + walletB.getBalance());
+		System.out.println("WalletB's balance is: " + walletB.getBalance());*/
 		
 		isChainValid();
 		
@@ -70,7 +91,7 @@ public class NoobChain {
 		Block currentBlock; 
 		Block previousBlock;
 		String hashTarget = new String(new char[difficulty]).replace('\0', '0');
-		HashMap<String,TransactionOutput> tempUTXOs = new HashMap<String,TransactionOutput>(); //a temporary working list of unspent transactions at a given block state.
+		HashMap<String,TransactionCreationOutput> tempUTXOs = new HashMap<String,TransactionCreationOutput>(); //a temporary working list of unspent transactions at a given block state.
 		tempUTXOs.put(genesisTransaction.outputs.get(0).getId(), genesisTransaction.outputs.get(0));
 		
 		//loop through blockchain to check hashes:
@@ -95,20 +116,20 @@ public class NoobChain {
 			}
 			
 			//loop thru blockchains transactions:
-			TransactionOutput tempOutput;
+			TransactionCreationOutput tempOutput;
 			for(int t=0; t <currentBlock.getTransactions().size(); t++) {
-				Transaction currentTransaction = currentBlock.getTransactions().get(t);
+				TransactionCreation currentTransaction = currentBlock.getTransactions().get(t);
 				
 				if(!currentTransaction.verifySignature()) {
 					System.out.println("#Signature on Transaction(" + t + ") is Invalid");
 					return false; 
 				}
-				if(currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
+				/*if(currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
 					System.out.println("#Inputs are note equal to outputs on Transaction(" + t + ")");
 					return false; 
-				}
+				}*/
 				
-				for(TransactionInput input: currentTransaction.inputs) {	
+				for(TransactionCreationInput input: currentTransaction.inputs) {	
 					tempOutput = tempUTXOs.get(input.getTransactionOutputId());
 					
 					if(tempOutput == null) {
@@ -116,15 +137,44 @@ public class NoobChain {
 						return false;
 					}
 					
-					if(input.getUTXO().getValue() != tempOutput.getValue()) {
-						System.out.println("#Referenced input Transaction(" + t + ") value is Invalid");
+					if(input.getUTXO().getName() != tempOutput.getName()) {
+						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
+						return false;
+					}
+					if(input.getUTXO().getDescription() != tempOutput.getDescription()) {
+						System.out.println("#Referenced input Transaction(" + t + ") description is Invalid");
+						return false;
+					}
+					if(input.getUTXO().getBegin().getTime() != tempOutput.getBegin().getTime()) {
+						System.out.println("#Referenced input Transaction(" + t + ") time is Invalid");
+						return false;
+					}
+					if(input.getUTXO().getEnd().getTime() != tempOutput.getEnd().getTime()) {
+						System.out.println("#Referenced input Transaction(" + t + ") end is Invalid");
+						return false;
+					}
+					if(input.getUTXO().getEnd_subcription().getTime() != tempOutput.getEnd_subcription().getTime()) {
+						System.out.println("#Referenced input Transaction(" + t + ") end_subcription is Invalid");
+						return false;
+					}
+					if(input.getUTXO().getLocation() != tempOutput.getLocation()) {
+						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
+						return false;
+					}
+					if(input.getUTXO().getMinCapacity() != tempOutput.getMinCapacity()) {
+						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
+						return false;
+					}
+					
+					if(input.getUTXO().getMaxCapacity() != tempOutput.getMaxCapacity()) {
+						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
 						return false;
 					}
 					
 					tempUTXOs.remove(input.getTransactionOutputId());
 				}
 				
-				for(TransactionOutput output: currentTransaction.outputs) {
+				for(TransactionCreationOutput output: currentTransaction.outputs) {
 					tempUTXOs.put(output.getId(), output);
 				}
 				
@@ -149,12 +199,9 @@ public class NoobChain {
 		blockchain.add(newBlock);
 	}
 	
-	public static HashMap<String, TransactionOutput> getUTXOs(){
+	public static HashMap<String, TransactionCreationOutput> getUTXOs(){
 		return UTXOs;
 	}
 	
-	public static float getMinimumTransaction(){
-		return minimumTransaction;
-	}
-	
+
 }
