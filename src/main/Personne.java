@@ -80,7 +80,7 @@ public class Personne {
 			return newTransaction;
 		}*/
 		
-		public TransactionCreation createEvent(PublicKey _recipient, String name, 
+		public TransactionCreation createEvent(String name, 
 				String description,
 				long begin,
 				long end,
@@ -154,7 +154,7 @@ public class Personne {
 	    //create array list of inputs
 			ArrayList<TransactionCreationInput> inputs = new ArrayList<TransactionCreationInput>();
 
-			TransactionCreation newTransaction = new TransactionCreation(publicKey, _recipient ,
+			TransactionCreation newTransaction = new TransactionCreation(publicKey ,
 					name, description, begin, end, end_subscription,
 					location, min_participants, max_participants, inputs);
 			newTransaction.generateSignature(privateKey);

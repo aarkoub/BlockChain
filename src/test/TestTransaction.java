@@ -11,7 +11,7 @@ import utils.StringUtil;
 public class TestTransaction {
 
 	public static void main(String[] args){
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
+		/*Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 		Personne amel = new Personne();
 		Personne kenza = new Personne();		
 		String name = "opera";
@@ -22,10 +22,9 @@ public class TestTransaction {
 		long end_subscription = Date.UTC(2019-1900, 0, 6, 22, 50, 8);
 		int min_capacity = 5;
 		int max_capacity = 8;
-	
 		
 		TransactionCreation t = new TransactionCreation(amel.getPublicKey(),kenza.getPublicKey(), name, description, begin, end, end_subscription,
 				location, min_capacity, max_capacity, null);
-		System.out.println(StringUtil.getJson(t));
+		System.out.println(StringUtil.getJson(t));*/
 	}
 }

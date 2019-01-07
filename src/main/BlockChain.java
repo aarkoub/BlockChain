@@ -38,7 +38,7 @@ public class BlockChain {
 		int max_capacity = 8;
 		
 		//create genesis transaction, which sends 100 NoobCoin to walletA: 
-		genesisTransaction = new TransactionCreation(amel.getPublicKey(), amel.getPublicKey(),
+		genesisTransaction = new TransactionCreation(amel.getPublicKey(),
 				name, description, begin, end, end_subscription, location,
 				min_capacity, max_capacity, null);
 		genesisTransaction.generateSignature(amel.getPrivateKey());	 //manually sign the genesis transaction	
@@ -54,9 +54,9 @@ public class BlockChain {
 		Block genesis = new Block("0");
 		genesis.addTransaction(genesisTransaction);
 		addBlock(genesis);
-		
+		System.out.println();
 		Block block1 = new Block(genesis.getHash());
-		System.out.println("Transaction added ? "+block1.addTransaction(lingchun.createEvent(lingchun.getPublicKey(),name,
+		System.out.println("Transaction added ? "+block1.addTransaction(lingchun.createEvent(name,
 				description, begin, end, end_subscription, location,
 				min_capacity, max_capacity)));
 		addBlock(block1);

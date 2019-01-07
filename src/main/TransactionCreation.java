@@ -3,6 +3,7 @@ package main;
 import java.security.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import utils.StringUtil;
 
@@ -18,22 +19,21 @@ public class TransactionCreation {
 	private int min_capacity, max_capacity;
 	public byte[] signature; // this is to prevent anybody else from spending funds in our wallet.
 	
-	public ArrayList<TransactionCreationInput> inputs = new ArrayList<TransactionCreationInput>();
-	public ArrayList<TransactionCreationOutput> outputs = new ArrayList<TransactionCreationOutput>();
+	public List<TransactionCreationInput> inputs = new ArrayList<>();
+	public List<TransactionCreationOutput> outputs = new ArrayList<>();
 	
 	
 	
 	private static int sequence = 0; // a rough count of how many transactions have been generated. 
 	
 	// Constructor: 
-	public TransactionCreation(PublicKey from, PublicKey to,
+	public TransactionCreation(PublicKey sender,
 			String name, String description, 
 			long begin, long end, long end_subscription,
 			String location,
 			int min_capacity, int max_capacity,
 			ArrayList<TransactionCreationInput> inputs) {
-		this.sender = from;
-		this.reciepient = to;
+		this.sender = sender;
 		this.begin = new Date(begin);
 		this.end = new Date(end);
 		this.end_subcription = new Date(end_subscription);
@@ -43,6 +43,7 @@ public class TransactionCreation {
 		this.max_capacity = max_capacity;
 		this.inputs = inputs;
 		this.location = location;
+		reciepient = sender;
 	}
 	
 	// This Calculates the transaction hash (which will be used as its Id)
