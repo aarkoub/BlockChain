@@ -5,7 +5,6 @@ import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Personne {
 	private PrivateKey privateKey;
@@ -164,5 +163,12 @@ public class Personne {
 			}
 			return newTransaction;
 
+		}
+		
+		public boolean registerEvent(PublicKey receiver, String id_event){
+			
+			
+			return false;
+			
 		}
 }
