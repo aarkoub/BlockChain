@@ -10,7 +10,7 @@ public class Block {
 	private String hash;
 	private String previousHash; 
 	private String merkleRoot;
-	private ArrayList<TransactionCreation> transactions = new ArrayList<TransactionCreation>(); //our data will be a simple message.
+	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(); //our data will be a simple message.
 	private long timeStamp; //as number of milliseconds since 1/1/1970.
 	private int nonce;
 	
@@ -47,7 +47,7 @@ public class Block {
 	}
 	
 	//Add transactions to this block
-	public boolean addTransaction(TransactionCreation transaction) {
+	public boolean addTransaction(Transaction transaction) {
 		//process transaction and check if valid, unless block is genesis block then ignore.
 		if(transaction == null) {
 			System.out.println("Transaction is null.");
@@ -81,7 +81,7 @@ public class Block {
 
 	
 
-	public ArrayList<TransactionCreation> getTransactions() {
+	public ArrayList<Transaction> getTransactions() {
 		return transactions;
 	}
 

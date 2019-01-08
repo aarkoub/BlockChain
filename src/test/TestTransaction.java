@@ -4,8 +4,8 @@ import java.security.Security;
 import java.util.Date;
 
 import main.Personne;
-import main.TransactionCreation;
-import main.TransactionCreationInput;
+import main.Transaction;
+import main.TransactionInput;
 import utils.StringUtil;
 
 public class TestTransaction {

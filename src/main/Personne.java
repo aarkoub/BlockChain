@@ -5,12 +5,13 @@ import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Personne {
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
-	public HashMap<String,TransactionCreationOutput> UTXOs = 
-			new HashMap<String,TransactionCreationOutput>(); //only UTXOs owned by this wallet.
+	public HashMap<String,TransactionOutput> UTXOs = 
+			new HashMap<String,TransactionOutput>(); //only UTXOs owned by this wallet.
 	
 	public Personne(){
 		generateKeyPair();	
@@ -79,7 +80,7 @@ public class Personne {
 			return newTransaction;
 		}*/
 		
-		public TransactionCreation createEvent(String name, 
+		public Transaction createEvent(String name, 
 				String description,
 				long begin,
 				long end,
@@ -151,24 +152,82 @@ public class Personne {
 			
 			
 	    //create array list of inputs
-			ArrayList<TransactionCreationInput> inputs = new ArrayList<TransactionCreationInput>();
+			//ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
 
-			TransactionCreation newTransaction = new TransactionCreation(publicKey ,
+			Transaction newTransaction = new Transaction(publicKey ,
 					name, description, begin, end, end_subscription,
-					location, min_participants, max_participants, inputs);
+					location, min_participants, max_participants);
 			newTransaction.generateSignature(privateKey);
 			
-			for(TransactionCreationInput input: inputs){
+			/*for(TransactionInput input: inputs){
 				UTXOs.remove(input.getTransactionOutputId());
-			}
+			}*/
 			return newTransaction;
 
 		}
 		
-		public boolean registerEvent(PublicKey receiver, String id_event){
-			
-			
+		public boolean isMaxParticipantsReached() {
+			int total = 0;	
+			int max_participants=0;
+	        for (Map.Entry<String, TransactionOutput> item: BlockChain.getUTXOs().entrySet()){
+	        	TransactionOutput UTXO = item.getValue();
+	       
+	            if(UTXO.isMine(publicKey)) { //if output belongs to me ( if coins belong to me )
+	            	UTXOs.put(UTXO.getId(),UTXO); //add it to our list of unspent transactions.
+	            	if(UTXO.isTypeCreation()){
+	            		max_participants = UTXO.getMaxCapacity();
+	            	}
+	            	else{
+	            		total ++ ; 
+	            	}
+	            }
+	        } 
+	        
+	        if(max_participants<=total){
+	        	return true;
+	        }
 			return false;
+		}
+		
+		public Transaction registerParticipant(PublicKey  _recipient, String id_event){
+			
+			if(isMaxParticipantsReached()){
+				System.out.println("Max participants reached: you cannot subscribe to this event");
+				return null;
+			}
+			
+			ArrayList<TransactionInput> inputs = new ArrayList<TransactionInput>();
+		    
+			boolean idEventFound = false;
+			for (Map.Entry<String, TransactionOutput> item: UTXOs.entrySet()){
+				
+				TransactionOutput UTXO = item.getValue();
+				if(UTXO.isTypeCreation()){
+					if(UTXO.getId_Event()==id_event){
+						idEventFound = true;
+					}
+					
+				}
+				
+				if(UTXO.getParticipant()==_recipient){
+					System.out.println("You are already registered");
+					return null;
+				}
+				
+				
+			}
+			
+			if(idEventFound){
+				System.out.println("Wrong id_event");
+				return null;
+			}
+			
+			Transaction newTransaction = new Transaction(publicKey,  _recipient, id_event, inputs);
+			newTransaction.generateSignature(privateKey);
+			
+		
+			return newTransaction;
+
 			
 		}
 }

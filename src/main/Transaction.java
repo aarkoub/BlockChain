@@ -7,32 +7,80 @@ import java.util.List;
 
 import utils.StringUtil;
 
-public class TransactionCreation {
+public class Transaction {
 	
-	public String transactionId; // this is also the hash of the transaction.
-	public PublicKey sender; // senders address/public key.
-	public PublicKey reciepient; // Recipients address/public key.
-	private final String type_transaction = "creation";
+	private String transactionId; // this is also the hash of the transaction.
+	private PublicKey sender; // senders address/public key.
+	private PublicKey reciepient; // Recipients address/public key.
+	private String type_transaction ;
 	private String name, description;
 	private Date begin, end, end_subcription;
 	private String location;
 	private int min_capacity, max_capacity;
-	public byte[] signature; // this is to prevent anybody else from spending funds in our wallet.
+	private byte[] signature; // this is to prevent anybody else from spending funds in our wallet.
+	private String id_event;
+	private boolean isTypeCreation;
+	private List<TransactionInput> inputs = new ArrayList<>();
+	private List<TransactionOutput> outputs = new ArrayList<>();
 	
-	public List<TransactionCreationInput> inputs = new ArrayList<>();
-	public List<TransactionCreationOutput> outputs = new ArrayList<>();
 	
 	
-	
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public PublicKey getSender() {
+		return sender;
+	}
+
+	public void setSender(PublicKey sender) {
+		this.sender = sender;
+	}
+
+	public PublicKey getReciepient() {
+		return reciepient;
+	}
+
+	public void setReciepient(PublicKey reciepient) {
+		this.reciepient = reciepient;
+	}
+
+	public byte[] getSignature() {
+		return signature;
+	}
+
+	public void setSignature(byte[] signature) {
+		this.signature = signature;
+	}
+
+	public List<TransactionInput> getInputs() {
+		return inputs;
+	}
+
+	public void setInputs(List<TransactionInput> inputs) {
+		this.inputs = inputs;
+	}
+
+	public List<TransactionOutput> getOutputs() {
+		return outputs;
+	}
+
+	public void setOutputs(List<TransactionOutput> outputs) {
+		this.outputs = outputs;
+	}
+
 	private static int sequence = 0; // a rough count of how many transactions have been generated. 
 	
 	// Constructor: 
-	public TransactionCreation(PublicKey sender,
+	public Transaction(PublicKey sender,
 			String name, String description, 
 			long begin, long end, long end_subscription,
 			String location,
-			int min_capacity, int max_capacity,
-			ArrayList<TransactionCreationInput> inputs) {
+			int min_capacity, int max_capacity) {
 		this.sender = sender;
 		this.begin = new Date(begin);
 		this.end = new Date(end);
@@ -41,10 +89,21 @@ public class TransactionCreation {
 		this.description = description;
 		this.min_capacity = min_capacity;
 		this.max_capacity = max_capacity;
-		this.inputs = inputs;
 		this.location = location;
 		reciepient = sender;
+		type_transaction = "creation";
+		isTypeCreation = true;
 	}
+	
+	public Transaction(PublicKey sender, PublicKey reciepient, String id_event,
+			List<TransactionInput> inputs) {
+		this.sender = sender;
+		this.reciepient = reciepient;
+		type_transaction = "register";
+		this.id_event = id_event;
+		this.inputs = inputs;
+	}
+	
 	
 	// This Calculates the transaction hash (which will be used as its Id)
 	private String calulateHash() {
@@ -88,24 +147,36 @@ public class TransactionCreation {
 			}
 					
 			//gather transaction inputs (Make sure they are unspent):
-			for(TransactionCreationInput i : inputs) {
+			for(TransactionInput i : inputs) {
 				i.setUTXO(BlockChain.getUTXOs().get(i.getTransactionOutputId()));
 			}
 
 			
 			transactionId = calulateHash();
-			outputs.add(new TransactionCreationOutput( this.reciepient,transactionId,
+			
+			if(type_transaction=="creation"){
+			
+			outputs.add(new TransactionOutput( this.sender,transactionId,
 					name, description, begin.getTime(), end.getTime(), end_subcription.getTime(),
-					location, min_capacity, max_capacity)); //send value to recipient
+					location, min_capacity, max_capacity));
+			
+			}
+			else{
+				if(type_transaction=="register"){
+					
+					outputs.add(new TransactionOutput(this.sender, this.reciepient, id_event,transactionId));
+				}
+			}
 			//outputs.add(new TransactionOutput( this.sender, leftOver,transactionId)); //send the left over 'change' back to sender		
 				
 			//add outputs to Unspent list
-			for(TransactionCreationOutput o : outputs) {
+			for(TransactionOutput o : outputs) {
 				BlockChain.getUTXOs().put(o.getId() , o);
 			}
 			
 			//remove transaction inputs from UTXO lists as spent:
-			for(TransactionCreationInput i : inputs) {
+			for(TransactionInput i : inputs) {
+		
 				if(i.getUTXO() == null) continue; //if Transaction can't be found skip it 
 				BlockChain.getUTXOs().remove(i.getUTXO().getId());
 			}
@@ -175,6 +246,10 @@ public class TransactionCreation {
 
 	public void setMax_capacity(int max_capacity) {
 		this.max_capacity = max_capacity;
+	}
+	
+	public boolean isTypeCreation(){
+		return isTypeCreation;
 	}
 		
 	//returns sum of inputs(UTXOs) values

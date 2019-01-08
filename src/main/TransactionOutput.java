@@ -5,18 +5,21 @@ import java.util.Date;
 
 import utils.StringUtil;
 
-public class TransactionCreationOutput {
+public class TransactionOutput {
 	
 	private String id;
 	private PublicKey reciepient; //also known as the new owner of these coins.
+	private PublicKey participant;
 	private Date begin, end, end_subcription;
 	private String name, description;
 	private String parentTransactionId; //the id of the transaction this output was created in
 	private String location;
 	private int max_capacity, min_capacity;
+	private String id_event;
+	private boolean isTypeCreation;
 	
 	//Constructor
-	public TransactionCreationOutput(PublicKey reciepient, String parentTransactionId,
+	public TransactionOutput(PublicKey reciepient, String parentTransactionId,
 			String name, String description,
 			long begin, long end, long end_subcription,
 			String location, int min_capacity, int max_capacity) {
@@ -34,6 +37,20 @@ public class TransactionCreationOutput {
 				name + description + begin + end + end_subcription + location+
 				min_capacity + min_capacity
 		+parentTransactionId);
+		isTypeCreation = true;
+	}
+	
+	public TransactionOutput(PublicKey reciepient, PublicKey participant, String parentTransactionId,
+			String id_event) {
+		this.reciepient = reciepient;
+		this.participant = participant;
+		this.parentTransactionId = parentTransactionId ;
+		this.id_event=id_event;
+		
+		this.id = StringUtil.applySha256(StringUtil.getStringFromKey(reciepient)+
+				id_event
+		+parentTransactionId);
+		
 	}
 	
 	//Check if coin belongs to you
@@ -128,5 +145,21 @@ public class TransactionCreationOutput {
 	
 	public void setMinCapacity(int min_capacity){
 		this.min_capacity = min_capacity;
+	}
+	
+	public void setId_Event(String id_event){
+		this.id_event = id_event;
+	}
+	
+	public String getId_Event(){
+		return id_event;
+	}
+	
+	public boolean isTypeCreation(){
+		return isTypeCreation;
+	}
+	
+	public PublicKey getParticipant(){
+		return participant;
 	}
 }

@@ -12,12 +12,12 @@ import java.util.Map;
 public class BlockChain {
 	
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
-	public static HashMap<String,TransactionCreationOutput> UTXOs = new HashMap<String,TransactionCreationOutput>();
+	public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
 	
 	public static int difficulty = 3;
 	public static Personne amel, lingchun;
 	
-	public static TransactionCreation genesisTransaction;
+	public static Transaction genesisTransaction;
 
 	public static void main(String[] args) {	
 		//add our blocks to the blockchain ArrayList:
@@ -31,35 +31,48 @@ public class BlockChain {
 		String name = "opera";
 		String description = "opera_garnier";
 		String location = "paris";
-		long begin = Date.UTC(2019-1900, 0, 7, 6, 0, 0);
-		long end = Date.UTC(2019-1900, 0, 8, 8, 8, 9);
-		long end_subscription = Date.UTC(2019-1900, 0, 6, 22, 50, 8);
+		long begin = Date.UTC(2019-1900, 0, 22, 6, 0, 0);
+		long end = Date.UTC(2019-1900, 0, 24, 8, 8, 9);
+		long end_subscription = Date.UTC(2019-1900, 0, 19, 22, 50, 8);
 		int min_capacity = 5;
 		int max_capacity = 8;
 		
 		//create genesis transaction, which sends 100 NoobCoin to walletA: 
-		genesisTransaction = new TransactionCreation(amel.getPublicKey(),
+		genesisTransaction = new Transaction(amel.getPublicKey(),
 				name, description, begin, end, end_subscription, location,
-				min_capacity, max_capacity, null);
+				min_capacity, max_capacity);
 		genesisTransaction.generateSignature(amel.getPrivateKey());	 //manually sign the genesis transaction	
-		genesisTransaction.transactionId = "0"; //manually set the transaction id
-		genesisTransaction.outputs.add(new TransactionCreationOutput(genesisTransaction.reciepient,genesisTransaction.transactionId,
+		genesisTransaction.setTransactionId("0"); //manually set the transaction id
+		genesisTransaction.getOutputs().add(new TransactionOutput(genesisTransaction.getReciepient(),genesisTransaction.getTransactionId(),
 				genesisTransaction.getName(), genesisTransaction.getDescription(), genesisTransaction.getBegin().getTime(),
 				genesisTransaction.getEnd().getTime(), genesisTransaction.getEnd_subcription().getTime(), genesisTransaction.getLocation(), 
 				genesisTransaction.getMin_capacity(), genesisTransaction.getMax_capacity()
 				)); //manually add the Transactions Output
-		UTXOs.put(genesisTransaction.outputs.get(0).getId(), genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
+		UTXOs.put(genesisTransaction.getOutputs().get(0).getId(), genesisTransaction.getOutputs().get(0)); //its important to store our first transaction in the UTXOs list.
 		
 		System.out.println("Creating and Mining Genesis block... ");
 		Block genesis = new Block("0");
 		genesis.addTransaction(genesisTransaction);
 		addBlock(genesis);
 		System.out.println();
+		
+		
 		Block block1 = new Block(genesis.getHash());
-		System.out.println("Transaction added ? "+block1.addTransaction(lingchun.createEvent(name,
-				description, begin, end, end_subscription, location,
-				min_capacity, max_capacity)));
+		System.out.println("Transaction added ? "+block1.addTransaction(amel.createEvent(name, description, begin, end, end_subscription, location,
+min_capacity, max_capacity)));
 		addBlock(block1);
+		System.out.println();
+		
+		Block block2 = new Block(block1.getHash());
+		block2.addTransaction(amel.registerParticipant(lingchun.getPublicKey(), block1.getTransactions().get(0).getTransactionId() ));
+		addBlock(block2);
+		System.out.println();
+		
+		//test : not to add the transaction cause participant alrealdy registered
+		Block block3 = new Block(block2.getHash());
+		block3.addTransaction(amel.registerParticipant(lingchun.getPublicKey(),block1.getTransactions().get(0).getTransactionId()));
+		addBlock(block3);
+		System.out.println();
 		
 		/*//testing
 		Block block1 = new Block(genesis.getHash());
@@ -91,8 +104,8 @@ public class BlockChain {
 		Block currentBlock; 
 		Block previousBlock;
 		String hashTarget = new String(new char[difficulty]).replace('\0', '0');
-		HashMap<String,TransactionCreationOutput> tempUTXOs = new HashMap<String,TransactionCreationOutput>(); //a temporary working list of unspent transactions at a given block state.
-		tempUTXOs.put(genesisTransaction.outputs.get(0).getId(), genesisTransaction.outputs.get(0));
+		HashMap<String,TransactionOutput> tempUTXOs = new HashMap<String,TransactionOutput>(); //a temporary working list of unspent transactions at a given block state.
+		tempUTXOs.put(genesisTransaction.getOutputs().get(0).getId(), genesisTransaction.getOutputs().get(0));
 		
 		//loop through blockchain to check hashes:
 		for(int i=1; i < blockchain.size(); i++) {
@@ -116,9 +129,9 @@ public class BlockChain {
 			}
 			
 			//loop thru blockchains transactions:
-			TransactionCreationOutput tempOutput;
+			TransactionOutput tempOutput;
 			for(int t=0; t <currentBlock.getTransactions().size(); t++) {
-				TransactionCreation currentTransaction = currentBlock.getTransactions().get(t);
+				Transaction currentTransaction = currentBlock.getTransactions().get(t);
 				
 				if(!currentTransaction.verifySignature()) {
 					System.out.println("#Signature on Transaction(" + t + ") is Invalid");
@@ -129,7 +142,7 @@ public class BlockChain {
 					return false; 
 				}*/
 				
-				for(TransactionCreationInput input: currentTransaction.inputs) {	
+				for(TransactionInput input: currentTransaction.getInputs()) {	
 					tempOutput = tempUTXOs.get(input.getTransactionOutputId());
 					
 					if(tempOutput == null) {
@@ -174,18 +187,24 @@ public class BlockChain {
 					tempUTXOs.remove(input.getTransactionOutputId());
 				}
 				
-				for(TransactionCreationOutput output: currentTransaction.outputs) {
+				for(TransactionOutput output: currentTransaction.getOutputs()) {
 					tempUTXOs.put(output.getId(), output);
 				}
+				if(currentTransaction.getOutputs().get(0).isTypeCreation()){
+					if( currentTransaction.getOutputs().get(0).getReciepient() != currentTransaction.getReciepient()) {
+						
+						System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
+						return false;
+					}
+				}
+				else{
+					if( currentTransaction.getOutputs().get(0).getParticipant() != currentTransaction.getReciepient()) {
+						
+						System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
+						return false;
+					}
+				}
 				
-				if( currentTransaction.outputs.get(0).getReciepient() != currentTransaction.reciepient) {
-					System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
-					return false;
-				}
-				if( currentTransaction.outputs.get(1).getReciepient() != currentTransaction.sender) {
-					System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
-					return false;
-				}
 				
 			}
 			
@@ -199,7 +218,7 @@ public class BlockChain {
 		blockchain.add(newBlock);
 	}
 	
-	public static HashMap<String, TransactionCreationOutput> getUTXOs(){
+	public static HashMap<String, TransactionOutput> getUTXOs(){
 		return UTXOs;
 	}
 	
