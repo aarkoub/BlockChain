@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
         TestCryptoHex.class,
         TestHMAC.class,
         TestMerkle.class,
-        TestSHA256.class
+        TestSHA256.class,
+        TestSECP256R1.class
         })
 public class AllTests {
 }

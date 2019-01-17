@@ -15,6 +15,9 @@ import java.util.List;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.crypto.EphemeralKeyPair;
+import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
+
 import com.google.gson.GsonBuilder;
 
 import main.Transaction;
@@ -144,5 +147,11 @@ public class StringUtil {
 		    }
 		    return digest;
 		  }
+	 
+	 public static PublicKey getPublicKey(byte[] pubKey){
+		 
+		
+		 return null;
+	 }
 	
 }
