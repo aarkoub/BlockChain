@@ -7,7 +7,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         TestCryptoHex.class,
-        TestHMAC.class
+        TestHMAC.class,
+        TestMerkle.class,
+        TestSHA256.class
         })
 public class AllTests {
 }
