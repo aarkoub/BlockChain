@@ -1,4 +1,6 @@
 package utils;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Formatter;
 import java.util.List;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.google.gson.GsonBuilder;
 
@@ -110,5 +115,34 @@ public class StringUtil {
 		String merkleRoot = (treeLayer.size() == 1) ? treeLayer.get(0) : "";
 		return merkleRoot;
 	}
+	
+	 public static String hmacDigest(String msg, String keyString) {
+		    String digest = null;
+		    
+		    String algo = "HmacSHA256";
+		    
+		    
+		    try {
+		      SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), algo);
+		      Mac mac = Mac.getInstance(algo);
+		      mac.init(key);
+
+		      byte[] bytes = mac.doFinal(msg.getBytes("ASCII"));
+
+		      StringBuffer hash = new StringBuffer();
+		      for (int i = 0; i < bytes.length; i++) {
+		        String hex = Integer.toHexString(0xFF & bytes[i]);
+		        if (hex.length() == 1) {
+		          hash.append('0');
+		        }
+		        hash.append(hex);
+		      }
+		      digest = hash.toString();
+		    } catch (UnsupportedEncodingException e) {
+		    } catch (InvalidKeyException e) {
+		    } catch (NoSuchAlgorithmException e) {
+		    }
+		    return digest;
+		  }
 	
 }

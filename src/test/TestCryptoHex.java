@@ -1,10 +1,12 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
+
+
+import static org.junit.Assert.*;
 
 import java.io.UnsupportedEncodingException;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import utils.StringUtil;
 
@@ -42,6 +44,6 @@ public class TestCryptoHex {
 			e.printStackTrace();
 		}
     }
-    
+
     
 }
