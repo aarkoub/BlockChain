@@ -1,12 +1,17 @@
 package utils;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.Signature;
+import java.security.spec.ECPrivateKeySpec;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Formatter;
@@ -15,8 +20,17 @@ import java.util.List;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.EphemeralKeyPair;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECNamedCurveSpec;
+import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import org.bouncycastle.math.ec.ECPoint;
 
 import com.google.gson.GsonBuilder;
 
@@ -74,7 +88,7 @@ public class StringUtil {
 	//Verifies a String signature 
 	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) {
 		try {
-			Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
+			Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA",  new BouncyCastleProvider());
 			ecdsaVerify.initVerify(publicKey);
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
@@ -148,10 +162,25 @@ public class StringUtil {
 		    return digest;
 		  }
 	 
-	 public static PublicKey getPublicKey(byte[] pubKey){
-		 
-		
-		 return null;
+	 public static PublicKey getPublicKey(byte[] public_key) throws NoSuchAlgorithmException, InvalidKeySpecException{
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+     	KeyFactory key_factory = KeyFactory.getInstance("ECDSA", new BouncyCastleProvider());
+     	X9ECParameters curve = SECNamedCurves.getByName("secp256r1");
+     	ECPoint point = curve.getCurve().decodePoint(public_key);
+     	ECParameterSpec parameters = new ECParameterSpec(curve.getCurve(), curve.getG(), curve.getN(), curve.getH());
+     	ECPublicKeySpec publicKeySpec = new ECPublicKeySpec(point, parameters);
+			return key_factory.generatePublic(publicKeySpec);
 	 }
-	
+	 
+	 public static PrivateKey getPrivateKey(byte[] secret_key) throws NoSuchAlgorithmException, InvalidKeySpecException{
+		
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256r1");
+     	KeyFactory key_factory = KeyFactory.getInstance("ECDSA", new BouncyCastleProvider());
+     	ECNamedCurveSpec parameters = new ECNamedCurveSpec("secp256r1", spec.getCurve(), spec.getG(),
+     			spec.getN());
+     	ECPrivateKeySpec privateKeySpec = new ECPrivateKeySpec(new BigInteger(secret_key), parameters);
+			return key_factory.generatePrivate(privateKeySpec);
+	 }
+	 
 }

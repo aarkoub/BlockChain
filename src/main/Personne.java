@@ -21,7 +21,7 @@ public class Personne {
 		try {
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA","BC");
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-			ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime192v1");
+			ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp256r1");
 			// Initialize the key generator and generate a KeyPair
 			keyGen.initialize(ecSpec, random);   //256 bytes provides an acceptable security level
 	        	KeyPair keyPair = keyGen.generateKeyPair();
