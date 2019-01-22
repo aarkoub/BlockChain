@@ -19,6 +19,7 @@ public class Personne {
 	
 	public void generateKeyPair() {
 		try {
+			
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA","BC");
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 			ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp256r1");

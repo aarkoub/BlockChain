@@ -128,6 +128,7 @@ public class Transaction {
 		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction   + name +
 				description + begin + end+end_subcription+ location
 				+min_capacity+max_capacity;
+		System.out.println("signature "+signature);
 		return StringUtil.verifyECDSASig(sender, data, signature);
 	}
 	
@@ -135,6 +136,7 @@ public class Transaction {
 		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction  + name +
 				description + begin + end+end_subcription+
 				location+min_capacity+max_capacity;
+		System.out.println("signature "+signature);
 		return StringUtil.verifyECDSASig(sender, data, signature);
 	}	
 	
