@@ -81,7 +81,7 @@ public class TestSECP256R1 {
         	
       
         
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e ) {
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException | IOException | PGPException e ) {
 			e.printStackTrace();
 		}
     }
