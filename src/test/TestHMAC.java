@@ -36,9 +36,9 @@ public class TestHMAC {
     	String hmac_res = StringUtil.hmacDigest(dataString, keyString);
    
     	System.out.println(StringUtil.applyHex(hmac_res.getBytes()));
-    System.out.println(new String(hmac_hex));
-		
-    assertTrue(hmac_res.equals(new String(hmac_hex)));
+	    System.out.println(new String(hmac_hex));
+			
+	    assertTrue(hmac_res.equals(new String(hmac_hex)));
     	
     }
     
