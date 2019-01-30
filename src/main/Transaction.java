@@ -121,17 +121,9 @@ public class Transaction {
 		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction +  name +
 				description + begin + end+end_subcription+
 				location+min_capacity+max_capacity;
-		signature = StringUtil.applyECDSASig(privateKey,data);		
+		signature = StringUtil.applyECDSASig(privateKey,data);	
 	}
 	//Verifies the data we signed hasnt been tampered with
-	public boolean verifiySignature() {
-		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction   + name +
-				description + begin + end+end_subcription+ location
-				+min_capacity+max_capacity;
-		System.out.println("signature "+signature);
-		return StringUtil.verifyECDSASig(sender, data, signature);
-	}
-	
 	public boolean verifySignature() {
 		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction  + name +
 				description + begin + end+end_subcription+
@@ -143,7 +135,7 @@ public class Transaction {
 	//Returns true if new transaction could be created.	
 	public boolean processTransaction() {
 			
-			if(verifiySignature() == false) {
+			if(verifySignature() == false) {
 				System.out.println("#Transaction Signature failed to verify");
 				return false;
 			}
@@ -152,7 +144,6 @@ public class Transaction {
 			for(TransactionInput i : inputs) {
 				i.setUTXO(BlockChain.getUTXOs().get(i.getTransactionOutputId()));
 			}
-
 			
 			transactionId = calulateHash();
 			

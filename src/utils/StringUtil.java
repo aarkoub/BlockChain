@@ -73,7 +73,7 @@ public class StringUtil {
 		Signature dsa;
 		byte[] output = new byte[0];
 		try {
-			dsa = Signature.getInstance("ECDSA", "BC");
+			dsa = Signature.getInstance("SHA256withECDSA");
 			dsa.initSign(privateKey);
 			byte[] strByte = input.getBytes();
 			dsa.update(strByte);
