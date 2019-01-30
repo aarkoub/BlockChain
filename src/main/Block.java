@@ -13,14 +13,14 @@ public class Block {
 	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(); //our data will be a simple message.
 	private long timeStamp; //as number of milliseconds since 1/1/1970.
 	private int nonce;
-	
+	private int level;
 	
 
 	//Block Constructor.  
 	public Block(String previousHash ) {
 		this.previousHash = previousHash;
 		this.timeStamp = new Date().getTime();
-		
+		this.level = 0;
 		this.hash = calculateHash(); //Making sure we do this after we set the other values.
 	}
 	
@@ -89,10 +89,13 @@ public class Block {
 	public long getTimeStamp() {
 		return timeStamp;
 	}
-	
-	
-	
 
+	public int getLevel() {
+		return level;
+	}
 
+	public void setLevel(int level) {
+		this.level = level;
+	}
 
 }

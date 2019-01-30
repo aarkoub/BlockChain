@@ -4,10 +4,16 @@ package main;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
-//import java.util.Base64;
 import java.util.HashMap;
-//import com.google.gson.GsonBuilder;
-import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.google.gson.Gson;
+
+import utils.StringUtil;
 
 public class BlockChain {
 	
@@ -19,6 +25,7 @@ public class BlockChain {
 	
 	public static Transaction genesisTransaction;
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {	
 		//add our blocks to the blockchain ArrayList:
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
@@ -27,7 +34,7 @@ public class BlockChain {
 		amel = new Personne();
 		lingchun = new Personne();
 		
-		Personne first_person = new Personne();
+//		Personne first_person = new Personne();
 		String name = "opera";
 		String description = "opera_garnier";
 		String location = "paris";
@@ -37,7 +44,7 @@ public class BlockChain {
 		int min_capacity = 5;
 		int max_capacity = 8;
 		
-		//create genesis transaction, which sends 100 NoobCoin to walletA: 
+		//create genesis transaction
 		genesisTransaction = new Transaction(amel.getPublicKey(),
 				name, description, begin, end, end_subscription, location,
 				min_capacity, max_capacity);
@@ -97,7 +104,7 @@ min_capacity, max_capacity)));
 		System.out.println("WalletB's balance is: " + walletB.getBalance());*/
 		
 		isChainValid();
-		
+		System.out.println(StringUtil.getJson(blockchain));
 	}
 	
 	public static Boolean isChainValid() {
@@ -204,17 +211,20 @@ min_capacity, max_capacity)));
 						return false;
 					}
 				}
-				
-				
 			}
-			
 		}
+		
 		System.out.println("Blockchain is valid");
 		return true;
 	}
 	
 	public static void addBlock(Block newBlock) {
 		newBlock.mineBlock(difficulty);
+		for(Block b : blockchain) {
+			if(b.getHash().equals(newBlock.getPreviousHash())){
+				newBlock.setLevel(b.getLevel()+1);
+			}
+		}
 		blockchain.add(newBlock);
 	}
 	
@@ -222,5 +232,43 @@ min_capacity, max_capacity)));
 		return UTXOs;
 	}
 	
-
+	public static Transaction verifyTransaction(String json) {
+		try {
+			Object obj = new JSONParser().parse(json);
+			JSONObject jo = (JSONObject) obj; 
+			
+			String transactionId = (String) jo.get("transactionId"); 
+	        
+			Object sender = jo.get("sender"); 
+	        JSONObject sender_json = (JSONObject) sender;
+	        
+	        Object reciepient = jo.get("reciepient"); 
+	        JSONObject reciepient_json = (JSONObject) reciepient;
+	        
+	        String type_transaction = (String) jo.get("type_transaction");
+	        
+	        String min_capacity = (String) jo.get("min_capacity"); 
+	        
+	        String max_capacity = (String) jo.get("max_capacity");
+	        
+	        Object signature = jo.get("signature"); 
+	        JSONArray signature_json = (JSONArray) signature;
+	        
+	        String id_event = (String) jo.get("id_event");
+	        
+	        String isTypeCreation = (String) jo.get("isTypeCreation");
+	        
+	        Object inputs = jo.get("inputs"); 
+	        JSONArray inputs_json = (JSONArray) inputs;
+	        
+	        Object outputs = jo.get("outputs"); 
+	        JSONArray outputs_json = (JSONArray) outputs;
+	        
+	        
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 }

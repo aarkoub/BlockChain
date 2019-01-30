@@ -27,7 +27,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.crypto.EphemeralKeyPair;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -73,7 +72,7 @@ public class StringUtil {
 		Signature dsa;
 		byte[] output = new byte[0];
 		try {
-			dsa = Signature.getInstance("SHA256withECDSA");
+			dsa = Signature.getInstance("SHA256withECDSA", "BC");
 			dsa.initSign(privateKey);
 			byte[] strByte = input.getBytes();
 			dsa.update(strByte);
@@ -100,7 +99,7 @@ public class StringUtil {
 	//Verifies a String signature 
 	public static boolean verifyECDSASig(PublicKey publicKey, String data, byte[] signature) {
 		try {
-			Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA",  new BouncyCastleProvider());
+			Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
 			ecdsaVerify.initVerify(publicKey);
 			ecdsaVerify.update(data.getBytes());
 			return ecdsaVerify.verify(signature);
@@ -220,4 +219,53 @@ public class StringUtil {
 		   return null;
 	 }
 	 
+	 public static int bigint_encoding_size(byte high_byte) {
+        if (high_byte >= 0) {
+            return 32;
+        } else {
+            return 33;
+        }
+    }
+
+    public static byte[] asn1_encode(byte [] sign) {
+        int len_r = bigint_encoding_size(sign[0]);
+        int len_s = bigint_encoding_size(sign[0]);
+        int len = 6 + len_r + len_s;
+        byte [] res = new byte[len];
+        res[0] = 0x30;
+        res[1] = (byte) (len - 2); // less than 127
+        res[2] = 0x02;
+        res[3] = (byte) len_r;
+        res[4 + len_r] = 0x02;
+        res[5 + len_r] = (byte) len_s;
+        if (len_r == 33) {
+            System.arraycopy(sign, 0, res, 5, 32);
+            res[4] = 0x00;
+        } else {
+            System.arraycopy(sign, 0, res, 4, 32);
+        }
+        if (len_s == 33) {
+            System.arraycopy(sign, 32, res, 7 + len_r, 32);
+            res[6 + len_r] = 0x00;
+        } else {
+            System.arraycopy(sign, 32, res, 6 + len_r, 32);
+        }
+        return res;
+    }
+
+    public static byte[] asn1_decode(byte [] sign) {
+        byte [] res = new byte[64];
+        int len_r = sign[3];
+        if(len_r == 32) {
+            System.arraycopy(sign, 4, res, 0, 32);
+        } else {
+            System.arraycopy(sign, 5, res, 0, 32);
+        }
+        if(sign[len_r + 5] == 32) {
+            System.arraycopy(sign, len_r + 6, res, 32, 32);
+        } else {
+            System.arraycopy(sign, len_r + 7, res, 32, 32);
+        }
+        return res;
+    }
 }
