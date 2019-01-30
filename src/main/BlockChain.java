@@ -171,16 +171,16 @@ min_capacity, max_capacity)));
 						return false;
 					}
 					if(input.getUTXO().getLocation() != tempOutput.getLocation()) {
-						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
+						System.out.println("#Referenced input Transaction(" + t + ") location is Invalid");
 						return false;
 					}
 					if(input.getUTXO().getMinCapacity() != tempOutput.getMinCapacity()) {
-						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
+						System.out.println("#Referenced input Transaction(" + t + ") min_capacity is Invalid");
 						return false;
 					}
 					
 					if(input.getUTXO().getMaxCapacity() != tempOutput.getMaxCapacity()) {
-						System.out.println("#Referenced input Transaction(" + t + ") name is Invalid");
+						System.out.println("#Referenced input Transaction(" + t + ") max_capacity is Invalid");
 						return false;
 					}
 					
@@ -200,7 +200,7 @@ min_capacity, max_capacity)));
 				else{
 					if( currentTransaction.getOutputs().get(0).getParticipant() != currentTransaction.getReciepient()) {
 						
-						System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
+						System.out.println("#Transaction(" + t + ") output participant is not who it should be");
 						return false;
 					}
 				}
