@@ -3,7 +3,7 @@ package test;
 import java.security.Security;
 import java.util.Date;
 
-import main.Personne;
+import main.Person;
 import main.Transaction;
 import main.TransactionInput;
 import utils.StringUtil;

@@ -21,7 +21,7 @@ public class BlockChain {
 	public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
 	
 	public static int difficulty = 3;
-	public static Personne amel, lingchun;
+	public static Person amel, lingchun;
 	
 	public static Transaction genesisTransaction;
 
@@ -31,8 +31,8 @@ public class BlockChain {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 		
 		//Create wallets:
-		amel = new Personne();
-		lingchun = new Personne();
+		amel = new Person();
+		lingchun = new Person();
 		
 //		Personne first_person = new Personne();
 		String name = "opera";
@@ -50,7 +50,7 @@ public class BlockChain {
 				min_capacity, max_capacity);
 		genesisTransaction.generateSignature(amel.getPrivateKey());	 //manually sign the genesis transaction	
 		genesisTransaction.setTransactionId("0"); //manually set the transaction id
-		genesisTransaction.getOutputs().add(new TransactionOutput(genesisTransaction.getReciepient(),genesisTransaction.getTransactionId(),
+		genesisTransaction.getOutputs().add(new TransactionOutput(genesisTransaction.getRecipient(),genesisTransaction.getTransactionId(),
 				genesisTransaction.getName(), genesisTransaction.getDescription(), genesisTransaction.getBegin().getTime(),
 				genesisTransaction.getEnd().getTime(), genesisTransaction.getEnd_subcription().getTime(), genesisTransaction.getLocation(), 
 				genesisTransaction.getMin_capacity(), genesisTransaction.getMax_capacity()
@@ -198,14 +198,14 @@ min_capacity, max_capacity)));
 					tempUTXOs.put(output.getId(), output);
 				}
 				if(currentTransaction.getOutputs().get(0).isTypeCreation()){
-					if( currentTransaction.getOutputs().get(0).getReciepient() != currentTransaction.getReciepient()) {
+					if( currentTransaction.getOutputs().get(0).getReciepient() != currentTransaction.getRecipient()) {
 						
 						System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
 						return false;
 					}
 				}
 				else{
-					if( currentTransaction.getOutputs().get(0).getParticipant() != currentTransaction.getReciepient()) {
+					if( currentTransaction.getOutputs().get(0).getParticipant() != currentTransaction.getRecipient()) {
 						
 						System.out.println("#Transaction(" + t + ") output participant is not who it should be");
 						return false;
@@ -242,8 +242,8 @@ min_capacity, max_capacity)));
 			Object sender = jo.get("sender"); 
 	        JSONObject sender_json = (JSONObject) sender;
 	        
-	        Object reciepient = jo.get("reciepient"); 
-	        JSONObject reciepient_json = (JSONObject) reciepient;
+	        Object recipient = jo.get("recipient"); 
+	        JSONObject recipient_json = (JSONObject) recipient;
 	        
 	        String type_transaction = (String) jo.get("type_transaction");
 	        

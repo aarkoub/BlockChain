@@ -8,7 +8,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import main.Block;
-import main.Personne;
+import main.Person;
 import main.Transaction;
 import main.TransactionInput;
 
@@ -20,8 +20,8 @@ public class TestMerkle {
 		byte[] root = TestUtils.readFile("tests/test_crypto/merkle/empty/root");
 		byte[] root_hex = TestUtils.readFile("tests/test_crypto/merkle/empty/root_hex");
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		Personne alice = new Personne();
-		Personne bob = new Personne();
+		Person alice = new Person();
+		Person bob = new Person();
 		
 		
 		String root_hex_string = new String(root_hex);
@@ -44,8 +44,8 @@ public class TestMerkle {
 		byte[] data_hex = TestUtils.readFile("tests/test_crypto/merkle/empty/data_00");
 		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		Personne alice = new Personne();
-		Personne bob = new Personne();
+		Person alice = new Person();
+		Person bob = new Person();
 		
 		
 		Block block = new Block("0");

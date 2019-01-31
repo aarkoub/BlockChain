@@ -7,13 +7,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Personne {
+public class Person {
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
 	public HashMap<String,TransactionOutput> UTXOs = 
 			new HashMap<String,TransactionOutput>(); //only UTXOs owned by this wallet.
 	
-	public Personne(){
+	public Person(){
 		generateKeyPair();	
 	}
 	

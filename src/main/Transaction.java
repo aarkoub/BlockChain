@@ -11,7 +11,7 @@ public class Transaction {
 	
 	private String transactionId; // this is also the hash of the transaction.
 	private PublicKey sender; // senders address/public key.
-	private PublicKey reciepient; // Recipients address/public key.
+	private PublicKey recipient; // Recipients address/public key.
 	private String type_transaction ;
 	private String name, description;
 	private Date begin, end, end_subcription;
@@ -41,12 +41,12 @@ public class Transaction {
 		this.sender = sender;
 	}
 
-	public PublicKey getReciepient() {
-		return reciepient;
+	public PublicKey getRecipient() {
+		return recipient;
 	}
 
-	public void setReciepient(PublicKey reciepient) {
-		this.reciepient = reciepient;
+	public void setRecipient(PublicKey reciepient) {
+		this.recipient = reciepient;
 	}
 
 	public byte[] getSignature() {
@@ -90,7 +90,7 @@ public class Transaction {
 		this.min_capacity = min_capacity;
 		this.max_capacity = max_capacity;
 		this.location = location;
-		reciepient = sender;
+		recipient = sender;
 		type_transaction = "creation";
 		isTypeCreation = true;
 	}
@@ -98,7 +98,7 @@ public class Transaction {
 	public Transaction(PublicKey sender, PublicKey reciepient, String id_event,
 			List<TransactionInput> inputs) {
 		this.sender = sender;
-		this.reciepient = reciepient;
+		this.recipient = reciepient;
 		type_transaction = "register";
 		this.id_event = id_event;
 		this.inputs = inputs;
@@ -110,7 +110,7 @@ public class Transaction {
 		sequence++; //increase the sequence to avoid 2 identical transactions having the same hash
 		return StringUtil.applySha256(
 				StringUtil.getStringFromKey(sender) +
-				StringUtil.getStringFromKey(reciepient) +type_transaction +
+				StringUtil.getStringFromKey(recipient) +type_transaction +
 				name+description+begin+end+end_subcription+
 				min_capacity+max_capacity+ sequence
 				);
@@ -118,14 +118,14 @@ public class Transaction {
 	
 	//Signs all the data we dont wish to be tampered with.
 	public void generateSignature(PrivateKey privateKey) {
-		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction +  name +
+		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient)+type_transaction +  name +
 				description + begin + end+end_subcription+
 				location+min_capacity+max_capacity;
 		signature = StringUtil.applyECDSASig(privateKey,data);	
 	}
 	//Verifies the data we signed hasnt been tampered with
 	public boolean verifySignature() {
-		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient)+type_transaction  + name +
+		String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(recipient)+type_transaction  + name +
 				description + begin + end+end_subcription+
 				location+min_capacity+max_capacity;
 		System.out.println("signature "+signature);
@@ -157,7 +157,7 @@ public class Transaction {
 			else{
 				if(type_transaction=="register"){
 					
-					outputs.add(new TransactionOutput(this.sender, this.reciepient, id_event,transactionId));
+					outputs.add(new TransactionOutput(this.sender, this.recipient, id_event,transactionId));
 				}
 			}
 			//outputs.add(new TransactionOutput( this.sender, leftOver,transactionId)); //send the left over 'change' back to sender		
