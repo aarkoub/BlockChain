@@ -2,7 +2,9 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import merkletree.MerkleTree;
 import utils.StringUtil;
 
 public class Block {
@@ -10,60 +12,41 @@ public class Block {
 	private String hash;
 	private String previousHash; 
 	private String merkleRoot;
-	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(); //our data will be a simple message.
-	private long timeStamp; //as number of milliseconds since 1/1/1970.
-	private int nonce;
-	private int level;
-	
+	private List<Transaction> transactions = new ArrayList<Transaction>(); 
+	private long timeStamp;
+	private int level;	
 
-	//Block Constructor.  
-	public Block(String previousHash ) {
+	public Block(String previousHash, List<Transaction> transactions ) {
 		this.previousHash = previousHash;
 		this.timeStamp = new Date().getTime();
+		this.transactions = transactions;
 		this.level = 0;
-		this.hash = calculateHash(); //Making sure we do this after we set the other values.
-	}
+		this.hash = calculateHash(); 
+		List<String> hashes = new ArrayList<>();
+		if(transactions!=null){
+			for(Transaction t : transactions){
+				hashes.add(t.getTransactionId());
+			}
+		}
+		else{
+			hashes.add("");
+		}
+		
+		merkleRoot = MerkleTree.getMerkleTreeRoot(hashes);
+		hash = calculateHash();
+		
 	
-	//Calculate new hash based on blocks contents
+	}
+
 	public String calculateHash() {
 		String calculatedhash = StringUtil.applySha256( 
 				previousHash +
 				Long.toString(timeStamp) +
-				Integer.toString(nonce) + 
 				merkleRoot
 				);
 		return calculatedhash;
 	}
-	
-	//Increases nonce value until hash target is reached.
-	public void mineBlock(int difficulty) {
-		merkleRoot = StringUtil.getMerkleRoot(transactions);
-		String target = StringUtil.getDificultyString(difficulty); //Create a string with difficulty * "0" 
-		while(!hash.substring( 0, difficulty).equals(target)) {
-			nonce ++;
-			hash = calculateHash();
-		}
-		System.out.println("Block Mined!!! : " + hash);
-	}
-	
-	//Add transactions to this block
-	public boolean addTransaction(Transaction transaction) {
-		//process transaction and check if valid, unless block is genesis block then ignore.
-		if(transaction == null) {
-			System.out.println("Transaction is null.");
-			return false;}		
-		if((!"0".equals(previousHash))) {
-			if((transaction.processTransaction() != true)) {
-				System.out.println("Transaction failed to process. Discarded.");
-				return false;
-			}
-		}
 
-		transactions.add(transaction);
-		System.out.println("Transaction Successfully added to Block");
-		return true;
-	}
-	
 	public String getHash() {
 		return hash;
 	}
@@ -72,7 +55,6 @@ public class Block {
 	public String getPreviousHash() {
 		return previousHash;
 	}
-
 	
 
 	public String getMerkleRoot() {
@@ -81,7 +63,7 @@ public class Block {
 
 	
 
-	public ArrayList<Transaction> getTransactions() {
+	public List<Transaction> getTransactions() {
 		return transactions;
 	}
 

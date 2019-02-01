@@ -14,7 +14,7 @@ public class Node {
 		this.right = null;
 		this.isLeaf = true;
 		this.data = "";
-		hash = StringUtil.hmacDigest(data, "\000");
+		hash = StringUtil.hmacDigest(data, "\002");
 	}
 	
 	

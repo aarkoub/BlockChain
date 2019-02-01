@@ -10,6 +10,9 @@ import utils.StringUtil;
 public class MerkleTree {
 
 	public static Node getMerkleTree(List<String> data) {
+		
+		if(data.size()==0) return new Node();
+		
 		if(data.size() == 1) return new Node(data.get(0));
 		
 		int count = data.size();
