@@ -15,7 +15,7 @@ public class TestCryptoHex {
     public void test_0() {
     	byte[] input = TestUtils.readFile("tests/test_crypto/hex/test_0/data");
         byte[] output = TestUtils.readFile("tests/test_crypto/hex/test_0/hex");
-		assertTrue(StringUtil.applyHex(input).equals(new String(output)));
+		assertTrue(StringUtil.toHex(input).equals(new String(output)));
 	
     }
     
@@ -23,14 +23,14 @@ public class TestCryptoHex {
     public void test_1() {
     	byte[] input = TestUtils.readFile("tests/test_crypto/hex/test_1/data");
         byte[] output = TestUtils.readFile("tests/test_crypto/hex/test_1/hex");
-		assertTrue(StringUtil.applyHex(input).equals(new String(output)));
+		assertTrue(StringUtil.toHex(input).equals(new String(output)));
     }
     
     @Test
     public void test_2() {
     	byte[] input = TestUtils.readFile("tests/test_crypto/hex/test_2/data");
         byte[] output = TestUtils.readFile("tests/test_crypto/hex/test_2/hex");
-		assertTrue(StringUtil.applyHex(input).equals(new String(output)));
+		assertTrue(StringUtil.toHex(input).equals(new String(output)));
 
     }
 

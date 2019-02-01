@@ -85,7 +85,7 @@ public class StringUtil {
 	}
 	
 	//Convert string to hex
-	public static String applyHex(byte[] bytes) {
+	public static String toHex(byte[] bytes) {
 		Formatter formatter = new Formatter();
 		for (byte b : bytes) {
 			formatter.format("%02x", b);

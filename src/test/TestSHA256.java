@@ -14,14 +14,14 @@ public class TestSHA256 {
     public void test_hex_data() {
     	byte[] input = TestUtils.readFile("tests/test_crypto/sha256/data");
         byte[] output = TestUtils.readFile("tests/test_crypto/sha256/data_hex");
-		assertTrue(StringUtil.applyHex(input).equals(new String(output)));
+		assertTrue(StringUtil.toHex(input).equals(new String(output)));
     }
     
     @Test
     public void test_sha_hex() {
     	byte[] input = TestUtils.readFile("tests/test_crypto/sha256/sha256");
         byte[] output = TestUtils.readFile("tests/test_crypto/sha256/sha256_hex");
-		assertTrue(StringUtil.applyHex(input).equals(new String(output)));
+		assertTrue(StringUtil.toHex(input).equals(new String(output)));
     }
     
     @Test
