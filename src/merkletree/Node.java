@@ -14,7 +14,7 @@ public class Node {
 		this.right = null;
 		this.isLeaf = true;
 		this.data = "";
-		hash = StringUtil.hmacDigest(data, new String("\000"));
+		hash = StringUtil.hmacDigest(data, "\000");
 	}
 	
 	
@@ -23,14 +23,14 @@ public class Node {
 		this.right = null;
 		this.isLeaf = true;
 		this.data = data;
-		this.hash = StringUtil.hmacDigest(data, new String("\000"));
+		this.hash = StringUtil.hmacDigest(data, "\000");
 	}
 	
 	public Node(Node left, Node right) {
 		this.left = left;
 		this.right = right;
 		this.data = "";
-		this.hash = StringUtil.hmacDigest(left.getHash() + right.getHash(), new String("\001"));
+		this.hash = StringUtil.hmacDigest(left.getHash() + right.getHash(), "\001");
 		this.isLeaf = false;
 	}
 

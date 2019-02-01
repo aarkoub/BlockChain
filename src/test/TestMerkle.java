@@ -2,10 +2,17 @@ package test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
 import merkletree.MerkleTree;
@@ -66,6 +73,4 @@ public class TestMerkle {
 		String data_res = MerkleTree.getMerkleTreeRoot(datastring);
 		assertTrue(data_res.equals(new String(root_hex, StandardCharsets.UTF_8)));
 	}
-	
-	
 }
