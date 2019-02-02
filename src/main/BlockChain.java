@@ -1,21 +1,19 @@
 package main;
 
 
+import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import merkletree.MerkleTree;
-import utils.StringUtil;
 
 public class BlockChain {
 	
@@ -124,43 +122,36 @@ public class BlockChain {
 	
 
 	public static Transaction verifyTransaction(String json) {
-		try {
-			Object obj = new JSONParser().parse(json);
-			JSONObject jo = (JSONObject) obj; 
-			
-			String transactionId = (String) jo.get("transactionId"); 
-	        
-			Object sender = jo.get("sender"); 
-	        JSONObject sender_json = (JSONObject) sender;
-	        
-	        Object recipient = jo.get("recipient"); 
-	        JSONObject recipient_json = (JSONObject) recipient;
-	        
-	        String type_transaction = (String) jo.get("type_transaction");
-	        
-	        String min_capacity = (String) jo.get("min_capacity"); 
-	        
-	        String max_capacity = (String) jo.get("max_capacity");
-	        
-	        Object signature = jo.get("signature"); 
-	        JSONArray signature_json = (JSONArray) signature;
-	        
-	        String id_event = (String) jo.get("id_event");
-	        
-	        String isTypeCreation = (String) jo.get("isTypeCreation");
-	        
-	        Object inputs = jo.get("inputs"); 
-	        JSONArray inputs_json = (JSONArray) inputs;
-	        
-	        Object outputs = jo.get("outputs"); 
-	        JSONArray outputs_json = (JSONArray) outputs;
-	        
-	        
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		JsonElement mJson =  new JsonParser().parse(json);
+		JsonObject jsonObject = mJson.getAsJsonObject();
 		
-		return null;
+		String transactionId = jsonObject.get("transactionId").getAsString(); 
+		PublicKey subscriber = new Gson().fromJson(jsonObject.get("subscriber"), PublicKey.class); 
+		PublicKey creator = new Gson().fromJson(jsonObject.get("creator"), PublicKey.class); 
+		String name = jsonObject.get("name").getAsString(); 
+		String description = jsonObject.get("description").getAsString(); 
+		Date begin = new Gson().fromJson(jsonObject.get("begin"), Date.class); 
+		Date end = new Gson().fromJson(jsonObject.get("end"), Date.class); 
+		Date end_subscription = new Gson().fromJson(jsonObject.get("end_subscription"), Date.class); 
+		String location = jsonObject.get("location").getAsString(); 
+		int min_capacity = jsonObject.get("min_capacity").getAsInt(); 
+		int max_capacity = jsonObject.get("max_capacity").getAsInt(); 
+		JsonArray signature_json = jsonObject.get("signature").getAsJsonArray();
+		byte[] signature = new byte[signature_json.size()];
+		for (int i = 0; i < signature_json.size(); i++) {
+			signature[i]=signature_json.get(i).getAsByte();
+		}
+		String id_event = jsonObject.get("id_event").getAsString(); 
+		boolean isTypeCreation = jsonObject.get("isTypeCreation").getAsBoolean(); 
+		Date date_creation_transaction = new Gson().fromJson(jsonObject.get("date_creation_transaction"), Date.class);
+		
+		if(isTypeCreation) {
+			return new Transaction(creator, name, description, begin.getTime(), end.getTime(),
+					end_subscription.getTime(), location, min_capacity, max_capacity);
+		}
+		else {
+			return new Transaction(subscriber, id_event);
+		}
 	}
 	
 	public boolean verifyTransaction(Transaction transaction) {

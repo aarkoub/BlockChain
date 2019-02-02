@@ -1,9 +1,7 @@
 package main;
 
 import java.security.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import utils.StringUtil;
 
@@ -12,7 +10,7 @@ public class Transaction {
 	private String transactionId; // this is also the hash of the transaction.
 	private PublicKey subscriber, creator; // senders address/public key.
 	private String name, description;
-	private Date begin, end, end_subcription;
+	private Date begin, end, end_subscription;
 	private String location;
 	private int min_capacity, max_capacity;
 	private byte[] signature; // this is to prevent anybody else from spending funds in our wallet.
@@ -33,7 +31,7 @@ public class Transaction {
 		this.creator = creator;
 		this.begin = new Date(begin);
 		this.end = new Date(end);
-		this.end_subcription = new Date(end_subscription);
+		this.end_subscription = new Date(end_subscription);
 		this.name = name;
 		this.description = description;
 		this.min_capacity = min_capacity;
@@ -60,7 +58,7 @@ public class Transaction {
 		if(isTypeCreation){
 			return StringUtil.applySha256(
 					StringUtil.getStringFromKey(creator) +
-					name+description+begin+end+end_subcription+
+					name+description+begin+end+end_subscription+
 					min_capacity+max_capacity+ date_creation_transaction.getTime()
 					);
 			
@@ -82,7 +80,7 @@ public class Transaction {
 		if(isTypeCreation){
 			
 			data = StringUtil.getStringFromKey(creator) +  name +
-					description + begin + end+end_subcription+
+					description + begin + end+end_subscription+
 					location+min_capacity+max_capacity;
 			
 		}
@@ -106,7 +104,7 @@ public class Transaction {
 		if(isTypeCreation){
 			
 			data = StringUtil.getStringFromKey(creator)  + name +
-					description + begin + end+end_subcription+
+					description + begin + end+end_subscription+
 					location+min_capacity+max_capacity;
 			
 		}
@@ -152,8 +150,8 @@ public class Transaction {
 
 
 
-	public Date getEnd_subcription() {
-		return end_subcription;
+	public Date getEnd_subscription() {
+		return end_subscription;
 	}
 
 
