@@ -38,42 +38,13 @@
 	    <version>1.60</version>
 	</dependency>
 	
-	<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
-	<dependency>
-	    <groupId>org.bouncycastle</groupId>
-	    <artifactId>bcpkix-jdk15on</artifactId>
-	    <version>1.56</version>
-	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk16 -->
-	<dependency>
-	    <groupId>org.bouncycastle</groupId>
-	    <artifactId>bcprov-jdk16</artifactId>
-	    <version>1.46</version>
-	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
-	<dependency>
-	    <groupId>org.bouncycastle</groupId>
-	    <artifactId>bcprov-jdk15on</artifactId>
-	    <version>1.47</version>
-	</dependency>
-	
-	
 	<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpg-jdk15on -->
 	<dependency>
 	    <groupId>org.bouncycastle</groupId>
 	    <artifactId>bcpg-jdk15on</artifactId>
-	    <version>1.47</version>
+	    <version>1.50</version>
 	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpg-jdk16 -->
-	<dependency>
-	    <groupId>org.bouncycastle</groupId>
-	    <artifactId>bcpg-jdk16</artifactId>
-	    <version>1.46</version>
-	</dependency>
-	
+
 	
 	<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 	<dependency>
