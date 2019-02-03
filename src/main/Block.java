@@ -14,6 +14,7 @@ public class Block {
 	private String merkleRoot;
 	private List<Transaction> transactions = new ArrayList<Transaction>(); 
 	private long timeStamp;
+	private int nonce;
 	private int level;	
 
 	public Block(String previousHash, List<Transaction> transactions ) {
@@ -31,7 +32,6 @@ public class Block {
 		else{
 			hashes.add("");
 		}
-		
 		merkleRoot = MerkleTree.getMerkleTreeRoot(hashes);
 		hash = calculateHash();
 		
@@ -42,11 +42,22 @@ public class Block {
 		String calculatedhash = StringUtil.applySha256( 
 				previousHash +
 				Long.toString(timeStamp) +
+				Integer.toString(nonce) + 
 				merkleRoot
 				);
 		return calculatedhash;
 	}
-
+	
+	//Increases nonce value until hash target is reached.
+	public void mineBlock(int difficulty) {
+		String target = StringUtil.getDificultyString(difficulty); 
+		while(!hash.substring( 0, difficulty).equals(target)) {
+			nonce ++;
+			hash = calculateHash();
+		}
+		System.out.println("Block Mined!!! : " + hash);
+	}
+	
 	public String getHash() {
 		return hash;
 	}

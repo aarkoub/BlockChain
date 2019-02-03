@@ -44,11 +44,10 @@ public class Transaction {
 		
 	}
 	
-	public Transaction(PublicKey subscriber, String id_event) {
+	public Transaction(PublicKey creator, PublicKey subscriber, String id_event) {
+		this.creator = creator;
 		this.subscriber = subscriber;
 		this.id_event = id_event;
-		
-	
 	}
 	
 	
@@ -92,7 +91,6 @@ public class Transaction {
 		}
 		
 		signature = StringUtil.applyECDSASig(privateKey,data);
-		
 		processTransaction();
 			
 	}
@@ -106,13 +104,14 @@ public class Transaction {
 			data = StringUtil.getStringFromKey(creator)  + name +
 					description + begin + end+end_subscription+
 					location+min_capacity+max_capacity;
-			
+			return StringUtil.verifyECDSASig(creator, data, signature);
 		}
-		else
-			data = StringUtil.getStringFromKey(creator)  +id_event;
+		else {
+			data = StringUtil.getStringFromKey(creator)+id_event;
+			return StringUtil.verifyECDSASig(creator, data, signature);
+		}
+//		System.out.println("signature "+signature);
 		
-		System.out.println("signature "+signature);
-		return StringUtil.verifyECDSASig(creator, data, signature);
 	}	
 	
 	//Returns true if new transaction could be created.	

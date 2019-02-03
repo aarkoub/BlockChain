@@ -14,11 +14,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import merkletree.MerkleTree;
+import utils.StringUtil;
 
 public class BlockChain {
 	
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
 	public static Person amel = new Person();
+	public static Person lingchun = new Person();
+	public static int difficulty = 3;
 
 	public static void main(String[] args) {	
 		//add our blocks to the blockchain ArrayList:
@@ -33,7 +36,7 @@ public class BlockChain {
 		int min_capacity = 5;
 		int max_capacity = 8;
 		
-		Block genesis = new Block("", null);
+		Block genesis = new Block("0", null);
 		addBlock(genesis);
 			
 		Transaction t  = amel.createEvent(name, description, begin, end, end_subscription, location,
@@ -43,22 +46,21 @@ public class BlockChain {
 		transactions.add(t);
 		Block block1 = new Block(genesis.getHash(), transactions);
 		addBlock(block1);
-		System.out.println();
 		
-		/*Block block2 = new Block(block1.getHash());
-		block2.addTransaction(amel.registerParticipant(lingchun.getPublicKey(), block1.getTransactions().get(0).getTransactionId() ));
+		List<Transaction> transactions_blocks2 = new ArrayList<>();
+		transactions_blocks2.add(amel.registerParticipant(lingchun.getPublicKey(), block1.getTransactions().get(0).getTransactionId() ));
+		Block block2 = new Block(block1.getHash(), transactions_blocks2);
 		addBlock(block2);
-		System.out.println();
 		
+		List<Transaction> transactions_blocks3 = new ArrayList<>();
+		transactions_blocks3.add(amel.registerParticipant(lingchun.getPublicKey(), block1.getTransactions().get(0).getTransactionId() ));
 		//test : not to add the transaction cause participant alrealdy registered
-		Block block3 = new Block(block2.getHash());
-		block3.addTransaction(amel.registerParticipant(lingchun.getPublicKey(),block1.getTransactions().get(0).getTransactionId()));
+		Block block3 = new Block(block2.getHash(), transactions_blocks3);
 		addBlock(block3);
-		System.out.println();*/
-		
+		System.out.println();
 		
 		isChainValid();
-		//System.out.println(StringUtil.getJson(blockchain));
+		System.out.println(StringUtil.getJson(blockchain));
 	}
 	
 	public static Boolean isChainValid() {
@@ -117,6 +119,7 @@ public class BlockChain {
 				newBlock.setLevel(b.getLevel()+1);
 			}
 		}
+		newBlock.mineBlock(difficulty);
 		blockchain.add(newBlock);
 	}
 	
@@ -150,7 +153,7 @@ public class BlockChain {
 					end_subscription.getTime(), location, min_capacity, max_capacity);
 		}
 		else {
-			return new Transaction(subscriber, id_event);
+			return new Transaction(creator, subscriber, id_event);
 		}
 	}
 	

@@ -4,13 +4,7 @@ import java.io.IOException;
 
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import network.P2PNetwork;
-import utils.NetworkUtil;
 
 public class TestNetwork {
 	public static void main(String[] args) throws IOException {
