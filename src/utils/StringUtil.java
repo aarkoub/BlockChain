@@ -139,33 +139,24 @@ public class StringUtil {
 		return merkleRoot;
 	}
 	
-	 public static String hmacDigest(String msg, String keyString) {
+	 public static byte[] hmacDigest(byte[] msg, byte[] keyString) {
 		    String digest = null;
 		    
 		    String algo = "HmacSHA256";
 		    
 		    
 		    try {
-		      SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), algo);
+		      SecretKeySpec key = new SecretKeySpec(keyString, algo);
 		      Mac mac = Mac.getInstance(algo);
 		      mac.init(key);
 
-		      byte[] bytes = mac.doFinal(msg.getBytes("UTF-8"));
+		      byte[] bytes = mac.doFinal(msg);
 
-		      StringBuffer hash = new StringBuffer();
-		      for (int i = 0; i < bytes.length; i++) {
-		        String hex = Integer.toHexString(0xFF & bytes[i]);
-		        if (hex.length() == 1) {
-		          hash.append('0');
-		        }
-		        hash.append(hex);
-		      }
-		      digest = hash.toString();
-		    } catch (UnsupportedEncodingException e) {
+		      return bytes;
 		    } catch (InvalidKeyException e) {
 		    } catch (NoSuchAlgorithmException e) {
 		    }
-		    return digest;
+		    return null;
 		  }
 	 
 	 public static PublicKey getPublicKey(byte[] publicKeyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException, PGPException{

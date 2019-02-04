@@ -81,6 +81,6 @@ public class MerkleTree {
 		data.add("8888");
 		Node n = getMerkleTree(data);
 		makeGraph(n);
-		System.out.println(StringUtil.hmacDigest("1111", "\000"));
+		System.out.println(StringUtil.toHex(StringUtil.hmacDigest("1111".getBytes(), "\000".getBytes())));
 	}
 }

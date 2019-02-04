@@ -1,5 +1,7 @@
 package merkletree;
 
+import java.io.UnsupportedEncodingException;
+
 import utils.StringUtil;
 
 public class Node {
@@ -14,7 +16,12 @@ public class Node {
 		this.right = null;
 		this.isLeaf = true;
 		this.data = "";
-		hash = StringUtil.hmacDigest(data, "\002");
+		try {
+			hash = new String(StringUtil.hmacDigest(data.getBytes(), "\002".getBytes()), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -23,14 +30,24 @@ public class Node {
 		this.right = null;
 		this.isLeaf = true;
 		this.data = data;
-		this.hash = StringUtil.hmacDigest(data, "\000");
+		try {
+			this.hash = new String(StringUtil.hmacDigest(data.getBytes(), "\000".getBytes()), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public Node(Node left, Node right) {
 		this.left = left;
 		this.right = right;
 		this.data = "";
-		this.hash = StringUtil.hmacDigest(left.getHash() + right.getHash(), "\001");
+		try {
+			this.hash = new String(StringUtil.hmacDigest(data.getBytes(), "\001".getBytes()), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.isLeaf = false;
 	}
 
