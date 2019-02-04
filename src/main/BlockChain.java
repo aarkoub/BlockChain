@@ -21,7 +21,6 @@ public class BlockChain {
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
 	public static Person amel = new Person();
 	public static Person lingchun = new Person();
-	public static int difficulty = 3;
 
 	public static void main(String[] args) {	
 		//add our blocks to the blockchain ArrayList:
@@ -119,7 +118,6 @@ public class BlockChain {
 				newBlock.setLevel(b.getLevel()+1);
 			}
 		}
-		newBlock.mineBlock(difficulty);
 		blockchain.add(newBlock);
 	}
 	
