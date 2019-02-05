@@ -43,7 +43,15 @@ public class Node {
 		this.right = right;
 		this.data = "";
 		try {
-			this.hash = new String(StringUtil.hmacDigest(data.getBytes(), "\001".getBytes()), "UTF-8");
+			byte[] content = new byte[(this.left.getHash().getBytes().length+this.right.getHash().getBytes().length)];
+			int i = 0;
+			for(i=0; i<this.left.getHash().getBytes().length; i++) {
+				content[i] = this.left.getHash().getBytes()[i];
+			}
+			for(int j=0; j<this.right.getHash().getBytes().length; j++) {
+				content[i+j] = this.right.getHash().getBytes()[j];
+			}
+			this.hash = new String(StringUtil.hmacDigest(content, "\001".getBytes()), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
