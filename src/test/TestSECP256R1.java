@@ -44,7 +44,7 @@ public class TestSECP256R1 {
 
 	        byte sigBytes[] = StringUtil.asn1_encode(valid_signature);
 	        
-	       assertTrue(StringUtil.verifyECDSASig(publicKey, new String(data, "UTF-8"), sigBytes));
+	       assertTrue(StringUtil.verifyECDSASig(publicKey, new String(data, "UTF-8"), signature));
         
 		} catch ( NoSuchProviderException | IOException | NoSuchAlgorithmException | InvalidKeySpecException | PGPException e ) {
 			e.printStackTrace();
