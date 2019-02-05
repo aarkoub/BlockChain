@@ -5,7 +5,9 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -21,6 +23,8 @@ public class BlockChain {
 	public static ArrayList<Block> blockchain = new ArrayList<Block>();
 	public static Person amel = new Person();
 	public static Person lingchun = new Person();
+	public static Map<String, List<Transaction>> database = new HashMap<>();
+	public static Map<String,Transaction> databaseEvents = new HashMap<>();
 
 	public static void main(String[] args) {	
 		//add our blocks to the blockchain ArrayList:
@@ -40,19 +44,34 @@ public class BlockChain {
 			
 		Transaction t  = amel.createEvent(name, description, begin, end, end_subscription, location,
 				min_capacity, max_capacity);
+		if(!verifyTransaction(t)){
+			System.out.println("Invalid transaction");
+			return;
+		}
+		
 		t.generateSignature(amel.getPrivateKey());
 		List<Transaction> transactions = new ArrayList<>();
 		transactions.add(t);
 		Block block1 = new Block(genesis.getHash(), transactions);
 		addBlock(block1);
 		
+		Transaction t2 = lingchun.registerParticipant(block1.getTransactions().get(0).getTransactionId() );
+		if(!verifyTransaction(t2)){
+			System.out.println("Invalid transaction");
+			return;
+		}
 		List<Transaction> transactions_blocks2 = new ArrayList<>();
-		transactions_blocks2.add(amel.registerParticipant(lingchun.getPublicKey(), block1.getTransactions().get(0).getTransactionId() ));
+		transactions_blocks2.add(t2);
 		Block block2 = new Block(block1.getHash(), transactions_blocks2);
 		addBlock(block2);
 		
+		Transaction t3 = lingchun.registerParticipant(block1.getTransactions().get(0).getTransactionId() );
+		if(!verifyTransaction(t3)){
+			System.out.println("Invalid transaction");
+			return;
+		}
 		List<Transaction> transactions_blocks3 = new ArrayList<>();
-		transactions_blocks3.add(amel.registerParticipant(lingchun.getPublicKey(), block1.getTransactions().get(0).getTransactionId() ));
+		transactions_blocks3.add(t3);
 		//test : not to add the transaction cause participant alrealdy registered
 		Block block3 = new Block(block2.getHash(), transactions_blocks3);
 		addBlock(block3);
@@ -151,12 +170,12 @@ public class BlockChain {
 					end_subscription.getTime(), location, min_capacity, max_capacity);
 		}
 		else {
-			return new Transaction(creator, subscriber, id_event);
+			return new Transaction(subscriber, id_event);
 		}
 	}
 	
-	public boolean verifyTransaction(Transaction transaction) {
-		//process transaction and check if valid, unless block is genesis block then ignore.
+	public static boolean verifyTransaction(Transaction transaction) {
+
 		if(transaction == null) {
 			System.out.println("Transaction is null.");
 			return false;}		
@@ -165,6 +184,102 @@ public class BlockChain {
 				System.out.println("Transaction failed to process. Discarded.");
 				return false;
 			
+		}
+
+		if(transaction.isTypeCreation()){
+			
+			if(transaction.getName()==null){
+				System.out.println("Name of the event null");
+				return false;
+			}
+			
+			if(transaction.getDescription()==null){
+				System.out.println("Description of the event null");
+				return false;
+			}
+			
+			if(transaction.getBegin().getTime()<0){
+				System.out.println("Date of the beginning of the event is null");
+				return false;
+			}
+			
+			if(transaction.getEnd().getTime()<0){
+				System.out.println("Date of the end of the event is null");
+				return false;
+			}
+			
+			if(transaction.getEnd_subscription().getTime()<0){
+				System.out.println("Date of the end of the subscription is null");
+				return false;
+			}
+			
+			if(transaction.getMin_capacity()<0){
+				System.out.println("Minimum number of participants must be positive");
+				return false;
+			}
+			
+			if(transaction.getMax_capacity()<0){
+				System.out.println("Maximum number of participants must be positive");
+				return false;
+			}
+			
+			if(transaction.getMin_capacity()>transaction.getMax_capacity()){
+				System.out.println("Minimum number of participants must be smaller than the maximum number of participants");
+				return false;
+			}
+			
+			if(transaction.getEnd_subscription().getTime()<new Date().getTime()){
+				System.out.println("Date of subcription is alrealdy passed");
+				return false;
+			}
+			
+			if(transaction.getEnd().getTime()<new Date().getTime()){
+				System.out.println("Date of the end of the event is alrealdy passed");
+				return false;
+			}
+			
+			if(transaction.getBegin().getTime()>transaction.getEnd().getTime()){
+				System.out.println("Date of the beginning of the event is after the date of end");
+				return false;
+			}
+			
+			if(transaction.getLocation()==null){
+				System.out.println("Location cannot be null");
+				return false;
+			}
+			
+			database.put(transaction.getTransactionId(), new ArrayList<>());
+			databaseEvents.put(transaction.getTransactionId(), transaction);
+		}
+		else{
+			
+						
+			if(database.get(transaction.getIdEventSubsciption())==null){
+				System.out.println("Wrong id_event");
+				return false;
+			}
+			
+			if(databaseEvents.get(transaction.getIdEventSubsciption()).getMax_capacity()==database.get(transaction.getIdEventSubsciption()).size()){
+				System.out.println("Max participants reached: you cannot subscribe to this event");
+				return false;
+			}
+			
+			
+			for(Transaction t : database.get(transaction.getIdEventSubsciption())){
+				
+				if(!t.isTypeCreation()){
+							
+					if(t.getSubscriber().getEncoded().equals(transaction.getSubscriber())){
+						System.out.println("You are already registered");
+						return false;
+					}
+				}
+				
+				
+			}
+			
+			
+			database.get(transaction.getIdEventSubsciption()).add(transaction);
 		}
 
 		return true;

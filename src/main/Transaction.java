@@ -44,8 +44,7 @@ public class Transaction {
 		
 	}
 	
-	public Transaction(PublicKey creator, PublicKey subscriber, String id_event) {
-		this.creator = creator;
+	public Transaction(PublicKey subscriber, String id_event) {
 		this.subscriber = subscriber;
 		this.id_event = id_event;
 	}
@@ -64,7 +63,7 @@ public class Transaction {
 		}
 		else{
 			return StringUtil.applySha256(
-					StringUtil.getStringFromKey(creator) + id_event);
+					StringUtil.getStringFromKey(subscriber) + id_event);
 			
 		}
 		
@@ -85,7 +84,7 @@ public class Transaction {
 		}
 		else{
 			
-			data = StringUtil.getStringFromKey(creator)+id_event;
+			data = StringUtil.getStringFromKey(subscriber)+id_event;
 			
 			
 		}
@@ -107,8 +106,8 @@ public class Transaction {
 			return StringUtil.verifyECDSASig(creator, data, signature);
 		}
 		else {
-			data = StringUtil.getStringFromKey(creator)+id_event;
-			return StringUtil.verifyECDSASig(creator, data, signature);
+			data = StringUtil.getStringFromKey(subscriber)+id_event;
+			return StringUtil.verifyECDSASig(subscriber, data, signature);
 		}
 //		System.out.println("signature "+signature);
 		
@@ -116,13 +115,14 @@ public class Transaction {
 	
 	//Returns true if new transaction could be created.	
 	public boolean processTransaction() {
-			
+		
 			if(verifySignature() == false) {
 				System.out.println("#Transaction Signature failed to verify");
 				return false;
 			}
 					
 			transactionId = calulateHash();
+			
 						
 			return true;
 		}
@@ -193,6 +193,10 @@ public class Transaction {
 
 	public byte[] getSignature() {
 		return signature;
+	}
+	
+	public String getIdEventSubsciption(){
+		return id_event;
 	}
 
 	
