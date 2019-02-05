@@ -30,6 +30,7 @@ import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECNamedCurveSpec;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPObjectFactory;
@@ -37,12 +38,14 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
+import org.bouncycastle.util.encoders.Hex;
 
 import com.google.gson.GsonBuilder;
 
 import main.Transaction;
 
 public class StringUtil {
+	
 	//Applies Sha256 to a string and returns the result. 
 	public static String applySha256(String input){		
 		try {
@@ -140,8 +143,7 @@ public class StringUtil {
 	}
 	
 	 public static byte[] hmacDigest(byte[] msg, byte[] keyString) {
-		    String digest = null;
-		    
+		   		    
 		    String algo = "HmacSHA256";
 		    
 		    
@@ -159,52 +161,39 @@ public class StringUtil {
 		    return null;
 		  }
 	 
-	 public static PublicKey getPublicKey(byte[] publicKeyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException, PGPException{
-         InputStream pgpIn = PGPUtil.getDecoderStream(new ByteArrayInputStream(publicKeyBytes));
-         PGPObjectFactory pgpFact = new PGPObjectFactory(pgpIn);
-         PGPPublicKeyRing pgpSecRing = (PGPPublicKeyRing) pgpFact.nextObject();
-         PGPPublicKey publicKey = pgpSecRing.getPublicKey();
-         JcaPGPKeyConverter converter = new JcaPGPKeyConverter();
-         Provider bcProvider = new BouncyCastleProvider();
-         converter.setProvider(bcProvider);
-         return converter.getPublicKey(publicKey);
-	 }
-	 
-	 public static PrivateKey getPrivateKey(byte[] secret_key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException{
-		
-		
-        ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256r1");
-     	KeyFactory key_factory = KeyFactory.getInstance("ECDSA", "BC");
-     	ECNamedCurveSpec parameters = new ECNamedCurveSpec("secp256r1", spec.getCurve(), spec.getG(),
-     			spec.getN());
-     	ECPrivateKeySpec privateKeySpec = new ECPrivateKeySpec(new BigInteger(secret_key), parameters);
-			return key_factory.generatePrivate(privateKeySpec);
-	 }
-	 
-	 public static PublicKey getPublicKeyFromPrivateKey(PrivateKey privateKey){
-		 KeyFactory keyFactory;
-		try {
-			keyFactory = KeyFactory.getInstance("ECDSA", "BC");
-			 ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+	 public static PublicKey getPublicKey(byte[] publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException, PGPException{
+		 java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			
+	        KeyFactory fact = KeyFactory.getInstance("ECDSA", "BC");
+	
+	        ECParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256r1");
+	        ECCurve curve = spec.getCurve();
 
-			    ECPoint Q = ecSpec.getG().multiply(((org.bouncycastle.jce.interfaces.ECPrivateKey) privateKey).getD());
+	        ECPublicKeySpec pubKey =
+	            new ECPublicKeySpec(
+	                                curve.decodePoint(publicKey),
+	                                spec);
 
-			    ECPublicKeySpec pubSpec = new ECPublicKeySpec(Q, ecSpec);
-			    PublicKey publicKeyGenerated = keyFactory.generatePublic(pubSpec);
-			    return publicKeyGenerated;
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		   return null;
+	        return fact.generatePublic(pubKey);
 	 }
 	 
+	 public static PrivateKey getPrivateKey(byte[] secret_key_hex) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, UnsupportedEncodingException{
+		
+		 java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			
+	        KeyFactory fact = KeyFactory.getInstance("ECDSA", "BC");
+	
+	        ECParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256r1");
+
+	        org.bouncycastle.jce.spec.ECPrivateKeySpec priKey =
+		            new org.bouncycastle.jce.spec.ECPrivateKeySpec(new BigInteger(new String(secret_key_hex, "UTF-8"), 16),
+		                                 spec);
+		 
+		 return fact.generatePrivate(priKey);
+		
+	 }
+	 
+
 	 public static int bigint_encoding_size(byte high_byte) {
         if (high_byte >= 0) {
             return 32;
